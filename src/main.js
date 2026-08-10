@@ -1,5 +1,4 @@
 import spaceinvadersConfig from "../spaceinvaders.config";
-parseSelectedMode();
 import {Engine} from "@babylonjs/core";
 import {Environment} from "./Environment";
 import State from "./State";
@@ -11,9 +10,21 @@ import {GameAssetsManager} from "./GameAssetsManager";
 import {UIText} from "./UIText";
 import {MobileInputs} from "./MobileInputs";
 
+// Parche de seguridad para la configuración de efectos retro
+if (!spaceinvadersConfig.oldSchoolEffects) {
+  spaceinvadersConfig.oldSchoolEffects = { enabled: false };
+}
+
+parseSelectedMode();
 
 const canvas = document.querySelector('canvas');
 const engine = new Engine(canvas, true);
+
+// Parche de seguridad para evitar que audioEngine rompa la escena si no está disponible
+if (Engine && !Engine.audioEngine) {
+  Engine.audioEngine = { unlock: () => {}, enabled: false };
+}
+
 const environment = new Environment(engine);
 
 const stars = new Starfield(environment.scene);
@@ -27,7 +38,9 @@ const gameController = new GameController(environment, inputController, gameAsse
 // Low FPS in oldSchoolEffects mode
 let lastRenderTime = 0;
 let FPS = 60;
-if (spaceinvadersConfig.oldSchoolEffects.enabled) FPS = 18;
+if (spaceinvadersConfig.oldSchoolEffects && spaceinvadersConfig.oldSchoolEffects.enabled) {
+  FPS = 18;
+}
 
 engine.runRenderLoop(() => {
   if (gameAssets.isComplete) {
@@ -38,7 +51,9 @@ engine.runRenderLoop(() => {
         gameController.titleScreen();
         break;
       case "STARTGAME":
-        Engine.audioEngine.unlock();
+        if (Engine.audioEngine && typeof Engine.audioEngine.unlock === 'function') {
+          Engine.audioEngine.unlock();
+        }
         gameController.startGame();
         break;
       case "NEXTLEVEL":
@@ -63,7 +78,7 @@ engine.runRenderLoop(() => {
     // Force a low FPS if required by oldSchoolEffects mode.
     let timeNow = Date.now();
     while (timeNow - lastRenderTime < 1000 / FPS) {
-      timeNow = Date.now()
+      timeNow = Date.now();
     }
     lastRenderTime = timeNow;
     window.scrollTo(0, 0);
@@ -82,7 +97,9 @@ function parseSelectedMode() {
     case 0:
       break;
     case 1:
-      spaceinvadersConfig.oldSchoolEffects.enabled = true;
+      if (spaceinvadersConfig.oldSchoolEffects) {
+        spaceinvadersConfig.oldSchoolEffects.enabled = true;
+      }
       break;
     case 2:
       spaceinvadersConfig.actionCam = true;
