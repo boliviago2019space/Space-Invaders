@@ -22,6 +22,18 @@ export default {
     numberofStars: 500,
     speed: 0.5
   },
+  aliens: {
+    interval: 1000,
+    speed: 1,
+    rows: 5,
+    columns: 11
+  },
+  defender: {
+    speed: 1
+  },
+  motherShip: {
+    interval: 10000
+  },
   oldSchoolEffects: {
     enabled: false
   },
