@@ -17,5 +17,12 @@ export default {
     fastInvader4: 'assets/sounds/fastInvader4.wav',
     ufoHighpitch: 'assets/sounds/ufoHighpitch.wav'
   },
-  audioEnabled: true
+  starfield: {
+    numberOfStars: 500,
+    speed: 0.5
+  },
+  oldSchoolEffects: {
+    enabled: false
+  },
+  actionCam: false
 }
