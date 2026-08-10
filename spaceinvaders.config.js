@@ -1,27 +1,20 @@
 export default {
-  actionCam: false, // This value is changed dynamically in the code based on the users selected mode.
-  light: {
-    intensity: 1.5
+  models: {
+    invader1: './assets/models/invader1.babylon',
+    invader2: './assets/models/invader2.babylon',
+    invader3: './assets/models/invader3.babylon',
+    motherShip: './assets/models/motherShip.babylon',
+    defender: './assets/models/defender.babylon',
+    bunker: './assets/models/bunker.babylon',
   },
-  motherShip: {
-    interval: 20, //seconds
-    rotateSpeed: 0.1,
-    velocity: 0.75,
-    fireRate: 5,
-    hitsToKill: 4
-  },
-  oldSchoolEffects: {
-    enabled: false, // This value is changed dynamically in the code based on the users selected mode.
-    blurIntensity: 0.35,
-    scanLines: true
-  },
-  starField: {
-    speed: 0.1,
-    minStarSize: 0.1,
-    maxStarSize: 0.6,
-    numberofStars: 500,
-    ratioOfBlinkingStars: 0.3,
-  },
-  startingLevel: 0, // Starting level -1;
-  startingLives: 2,
+  sounds: {
+    shoot: './assets/sounds/shoot.wav',
+    invaderKilled: './assets/sounds/invaderKilled.wav',
+    explosion: './assets/sounds/explosion.wav',
+    fastInvader1: './assets/sounds/fastInvader1.wav',
+    fastInvader2: './assets/sounds/fastInvader2.wav',
+    fastInvader3: './assets/sounds/fastInvader3.wav',
+    fastInvader4: './assets/sounds/fastInvader4.wav',
+    ufoHighpitch: './assets/sounds/ufoHighpitch.wav'
+  }
 }
