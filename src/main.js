@@ -10,7 +10,7 @@ import {GameAssetsManager} from "./GameAssetsManager";
 import {UIText} from "./UIText";
 import {MobileInputs} from "./MobileInputs";
 
-// Parche de seguridad para la configuración de efectos retro
+// Parche de seguridad previo a ejecutar los modos
 if (!spaceinvadersConfig.oldSchoolEffects) {
   spaceinvadersConfig.oldSchoolEffects = { enabled: false };
 }
@@ -19,12 +19,6 @@ parseSelectedMode();
 
 const canvas = document.querySelector('canvas');
 const engine = new Engine(canvas, true);
-
-// Parche de seguridad para evitar que audioEngine rompa la escena si no está disponible
-if (Engine && !Engine.audioEngine) {
-  Engine.audioEngine = { unlock: () => {}, enabled: false };
-}
-
 const environment = new Environment(engine);
 
 const stars = new Starfield(environment.scene);
@@ -34,8 +28,6 @@ const inputController = new InputController(environment.scene);
 const UI = new UIText();
 const gameController = new GameController(environment, inputController, gameAssets, UI);
 
-// Set default FPS to 60.
-// Low FPS in oldSchoolEffects mode
 let lastRenderTime = 0;
 let FPS = 60;
 if (spaceinvadersConfig.oldSchoolEffects && spaceinvadersConfig.oldSchoolEffects.enabled) {
@@ -72,10 +64,10 @@ engine.runRenderLoop(() => {
         gameController.gameOver();
         break;
       default:
-        // does nothing.
         break;
     }
-    // Force a low FPS if required by oldSchoolEffects mode.
+
+    // Control de FPS para el modo Retro
     let timeNow = Date.now();
     while (timeNow - lastRenderTime < 1000 / FPS) {
       timeNow = Date.now();
@@ -92,14 +84,16 @@ window.addEventListener('resize', () => {
 
 function parseSelectedMode() {
   let mode = parseInt(window.localStorage.getItem('mode') ?? 0);
-  document.querySelector("body").classList.add("mode"+mode);
+  document.querySelector("body").classList.add("mode" + mode);
+  
   switch (mode) {
     case 0:
       break;
     case 1:
-      if (spaceinvadersConfig.oldSchoolEffects) {
-        spaceinvadersConfig.oldSchoolEffects.enabled = true;
+      if (!spaceinvadersConfig.oldSchoolEffects) {
+        spaceinvadersConfig.oldSchoolEffects = {};
       }
+      spaceinvadersConfig.oldSchoolEffects.enabled = true;
       break;
     case 2:
       spaceinvadersConfig.actionCam = true;
