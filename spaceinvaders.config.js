@@ -22,14 +22,20 @@ export default {
     numberofStars: 500,
     speed: 0.5
   },
+  game: {
+    initialLives: 3,
+    initialLevel: 1,
+    levelText: "LEVEL"
+  },
+  defender: {
+    speed: 1,
+    lives: 3
+  },
   aliens: {
     interval: 1000,
     speed: 1,
     rows: 5,
     columns: 11
-  },
-  defender: {
-    speed: 1
   },
   motherShip: {
     interval: 10000
