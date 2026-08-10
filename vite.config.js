@@ -1,4 +1,5 @@
 export default {
+  "base": "./",
   "root": "src",
   "publicDir":"../public",
   "build": {
