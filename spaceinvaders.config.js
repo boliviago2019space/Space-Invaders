@@ -19,6 +19,7 @@ export default {
   },
   starfield: {
     numberOfStars: 500,
+    numberofStars: 500,
     speed: 0.5
   },
   oldSchoolEffects: {
