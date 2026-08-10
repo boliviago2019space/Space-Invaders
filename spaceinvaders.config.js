@@ -16,5 +16,6 @@ export default {
     fastInvader3: 'assets/sounds/fastInvader3.wav',
     fastInvader4: 'assets/sounds/fastInvader4.wav',
     ufoHighpitch: 'assets/sounds/ufoHighpitch.wav'
-  }
+  },
+  audioEnabled: true
 }
