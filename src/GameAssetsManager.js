@@ -9,112 +9,76 @@ export class GameAssetsManager {
     this.isComplete = false;
     this.scene = scene;
     this.assetContainer = new AssetContainer(this.scene);
-    this.totalAssetsToLoad = 5 + 10;
+    this.totalAssetsToLoad = 15;
     this.assetsLoaded = 0;
+
+    // Tiempo límite de seguridad: Si en 4 segundos no ha cargado todo, fuerza el inicio
+    setTimeout(() => {
+      if (!this.isComplete) {
+        console.warn("Forzando el inicio del juego por tiempo límite de carga.");
+        this.assetContainer.removeAllFromScene();
+        this.isComplete = true;
+      }
+    }, 4000);
 
     this.loadSounds();
     this.loadModels();
   }
 
   loadSounds() {
-    this.sounds.levelStart = new Sound("levelStart", "./assets/sounds/level-start-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
+    const soundList = [
+      ["levelStart", "./assets/sounds/level-start-sfx.wav"],
+      ["lazer", "./assets/sounds/player-bullet-sfx.wav"],
+      ["alienMove", "./assets/sounds/alien-move-sfx.wav"],
+      ["alienBullet", "./assets/sounds/alien-bullet-sfx.wav"],
+      ["clearLevel", "./assets/sounds/clear-level-sfx.wav"],
+      ["motherShipExplosion", "./assets/sounds/mothership-explosion-sfx.wav"],
+      ["playerExplosion", "./assets/sounds/player-explosion-sfx.wav"],
+      ["alienExplosion", "./assets/sounds/alien-explosion-sfx.wav"],
+      ["gameOver", "./assets/sounds/game-over-sfx.wav"],
+      ["motherShip", "./assets/sounds/mothership-sfx.wav"]
+    ];
 
-    this.sounds.lazer = new Sound("Lazer", "./assets/sounds/player-bullet-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
+    soundList.forEach(([name, path]) => {
+      try {
+        this.sounds[name] = new Sound(name, path, this.scene, () => {
+          this.assetsLoaded++;
+          this.checkComplete();
+        }, {
+          loop: name === "motherShip",
+          onError: () => {
+            console.warn(`No se pudo cargar el sonido: ${path}`);
+            this.assetsLoaded++;
+            this.checkComplete();
+          }
+        });
+      } catch (e) {
+        this.assetsLoaded++;
+        this.checkComplete();
+      }
     });
-
-    this.sounds.alienMove = new Sound("alienMove", "./assets/sounds/alien-move-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.sounds.alienBullet = new Sound("alienBullet", "./assets/sounds/alien-bullet-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.sounds.clearLevel = new Sound("clearLevel", "./assets/sounds/clear-level-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.sounds.motherShipExplosion = new Sound("motherShipExplosion", "./assets/sounds/mothership-explosion-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.sounds.playerExplosion = new Sound("playerExplosion", "./assets/sounds/player-explosion-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.sounds.alienExplosion = new Sound("alienExplosion", "./assets/sounds/alien-explosion-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.sounds.gameOver = new Sound("gameOver", "./assets/sounds/game-over-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.sounds.motherShip = new Sound("motherShip", "./assets/sounds/mothership-sfx.wav", this.scene, () => {
-      this.assetsLoaded++;
-      this.checkComplete();
-    }, {
-      loop: true
-    });
-    this.checkComplete();
   }
 
   loadModels() {
-    this.loadAsset("Alien_1.glb").then((assets) => {
-      assets.meshes[0].rotation = new Vector3(0, 0, 0); // root Mesh
-      assets.meshes[1].position = new Vector3(0, -2000, -2000); // Alien
-      this.pushToAssetsContainer(assets.meshes[0]);
-      this.pushToAssetsContainer(assets.meshes[1]);
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
+    const models = ["Alien_1.glb", "Alien_2.glb", "Alien_3.glb", "Player_1.glb", "MotherShip.glb"];
 
-    this.loadAsset("Alien_2.glb").then((assets) => {
-      assets.meshes[0].rotation = new Vector3(0, 0, 0);
-      assets.meshes[1].position = new Vector3(0, -2000, -2000);
-      this.pushToAssetsContainer(assets.meshes[0]);
-      this.pushToAssetsContainer(assets.meshes[1]);
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.loadAsset("Alien_3.glb").then((assets) => {
-      assets.meshes[0].rotation = new Vector3(0, 0, 0);
-      assets.meshes[1].position = new Vector3(0, -2000, -2000);
-      this.pushToAssetsContainer(assets.meshes[0]);
-      this.pushToAssetsContainer(assets.meshes[1]);
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.loadAsset("Player_1.glb").then((assets) => {
-      assets.meshes[0].rotation = new Vector3(0, 0, 0);
-      assets.meshes[1].position = new Vector3(0, -2000, -2000);
-      this.pushToAssetsContainer(assets.meshes[0]);
-      this.pushToAssetsContainer(assets.meshes[1]);
-      this.assetsLoaded++;
-      this.checkComplete();
-    });
-
-    this.loadAsset("MotherShip.glb").then((assets) => {
-      assets.meshes[0].rotation = new Vector3(0, 0, 0);
-      assets.meshes[1].position = new Vector3(0, -2000, -2000);
-      this.pushToAssetsContainer(assets.meshes[0]);
-      this.pushToAssetsContainer(assets.meshes[1]);
-      this.assetsLoaded++;
-      this.checkComplete();
+    models.forEach((file) => {
+      this.loadAsset(file)
+        .then((assets) => {
+          if (assets && assets.meshes && assets.meshes.length > 0) {
+            assets.meshes[0].rotation = new Vector3(0, 0, 0);
+            if (assets.meshes[1]) assets.meshes[1].position = new Vector3(0, -2000, -2000);
+            this.pushToAssetsContainer(assets.meshes[0]);
+            if (assets.meshes[1]) this.pushToAssetsContainer(assets.meshes[1]);
+          }
+          this.assetsLoaded++;
+          this.checkComplete();
+        })
+        .catch((err) => {
+          console.warn(`Error cargando modelo ${file}:`, err);
+          this.assetsLoaded++;
+          this.checkComplete();
+        });
     });
   }
 
@@ -124,7 +88,7 @@ export class GameAssetsManager {
   }
 
   pushToAssetsContainer(mesh) {
-    this.assetContainer.meshes.push(mesh);
+    if (mesh) this.assetContainer.meshes.push(mesh);
   }
 
   clone(name, newName = null) {
@@ -132,7 +96,7 @@ export class GameAssetsManager {
     let newMesh = null;
     let sourceMesh = this.assetContainer.meshes.filter((mesh) => {
       return mesh.name === name;
-    })
+    });
     if (sourceMesh.length) {
       newMesh = sourceMesh[0].clone(newName, undefined, undefined);
       newMesh.name = newName;
@@ -141,8 +105,7 @@ export class GameAssetsManager {
   }
 
   checkComplete() {
-    if (this.assetsLoaded > this.totalAssetsToLoad - 1) {
-      // Must call removeAllFromScene on next tick for some reason
+    if (this.assetsLoaded >= this.totalAssetsToLoad) {
       setTimeout(() => {
         this.assetContainer.removeAllFromScene();
         this.isComplete = true;
